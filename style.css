@@ -444,6 +444,19 @@ select:focus, input:focus {
   color: var(--gray-900);
 }
 
+.pay-link {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--gray-700);
+  align-self: flex-start;
+}
+
+.payment-card.federal .pay-link { color: #6d28d9; }
+.payment-card.state .pay-link { color: #047857; }
+.pay-link:hover { text-decoration: underline; }
+
 /* Breakdown Table */
 .breakdown {
   border-top: 1px solid var(--gray-200);

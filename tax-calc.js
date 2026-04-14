@@ -535,6 +535,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('state-payment').textContent = formatCurrency(r.quarterlyState);
     document.getElementById('state-payment-label').textContent = r.stateName + ' Payments';
 
+    const statePayLink = document.getElementById('state-pay-link');
+    const statePayUrl = STATE_PAY_URLS[inputs.state];
+    if (statePayUrl) {
+      statePayLink.href = statePayUrl;
+      statePayLink.textContent = `Pay ${r.stateName} →`;
+      statePayLink.classList.remove('hidden');
+    } else {
+      statePayLink.classList.add('hidden');
+    }
+
     // Breakdown
     document.getElementById('breakdown-total-income').textContent = formatCurrency(r.totalIncome);
     document.getElementById('breakdown-business-deductions').textContent = '???';
