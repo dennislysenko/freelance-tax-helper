@@ -2,7 +2,7 @@
 
 A quarterly estimated tax calculator for freelancers and self-employed folks in the US. Answers the question *"what should I pay the IRS this quarter?"* in under a minute — including when you don't know your full-year income yet.
 
-> **Disclaimer:** This is an estimation tool, not tax advice. Numbers are unverified. Consult a tax professional before acting on any of this.
+**Live:** <https://freelance-tax-helper.vercel.app/>
 
 ## What makes it different
 
@@ -19,6 +19,8 @@ Most online quarterly calculators ask for your annual income. Freelancers mid-ye
 - **Standard vs itemized** (mortgage interest, SALT cap)
 - **Shareable URL** and **CSV export**
 - Runs entirely client-side, no data leaves the browser
+
+> **Disclaimer:** This is an estimation tool, not tax advice. Numbers are unverified. Consult a tax professional before acting on any of this.
 
 ## Running locally
 
