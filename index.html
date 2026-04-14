@@ -158,12 +158,18 @@
       <div class="payment-cards">
         <div class="payment-card federal">
           <span class="payment-label">Federal Payments</span>
-          <span id="federal-payment" class="payment-amount">$0</span>
+          <div class="payment-amount-row">
+            <span id="federal-payment" class="payment-amount">$0</span>
+            <button type="button" class="copy-btn" data-copy-target="federal-payment" title="Copy amount without commas">Copy</button>
+          </div>
           <a href="https://www.irs.gov/payments/direct-pay" target="_blank" rel="noopener" class="pay-link">Pay the IRS →</a>
         </div>
         <div class="payment-card state">
           <span id="state-payment-label" class="payment-label">State Payments</span>
-          <span id="state-payment" class="payment-amount">$0</span>
+          <div class="payment-amount-row">
+            <span id="state-payment" class="payment-amount">$0</span>
+            <button type="button" class="copy-btn" data-copy-target="state-payment" title="Copy amount without commas">Copy</button>
+          </div>
           <a id="state-pay-link" href="#" target="_blank" rel="noopener" class="pay-link hidden">Pay your state →</a>
         </div>
       </div>

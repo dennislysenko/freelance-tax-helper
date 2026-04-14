@@ -470,6 +470,26 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.textContent = section.classList.contains('hidden') ? 'Add advanced info ▾' : 'Hide advanced info ▴';
   });
 
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const target = document.getElementById(btn.dataset.copyTarget);
+      const raw = (target?.textContent || '').replace(/[$,\s]/g, '');
+      try {
+        await navigator.clipboard.writeText(raw);
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch {
+        btn.textContent = 'Failed';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+      }
+    });
+  });
+
   function gatherInputs() {
     return {
       taxYear: parseInt(document.getElementById('tax-year').value),
