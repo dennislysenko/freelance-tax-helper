@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estimated Tax Payment Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    This tool is for estimation purposes only. It is not tax advice and calculations are unverified. Consult a tax professional.
+  </div>
+
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <h1>Estimated Tax Payment Calculator</h1>
+    <div class="top-actions">
+      <button id="export-url-btn" class="btn btn-outline" title="Copy shareable URL">Share Link</button>
+      <button id="export-csv-btn" class="btn btn-outline" title="Download CSV">Export CSV</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Left Panel: Form -->
+    <section class="panel form-panel">
+      <h2>Your details</h2>
+      <form id="tax-form">
+        <div class="form-group">
+          <label for="tax-year">Tax year</label>
+          <select id="tax-year">
+            <option value="2026" selected>2026</option>
+            <option value="2025">2025</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="filing-status">Tax filing status</label>
+          <select id="filing-status">
+            <option value="single">Single</option>
+            <option value="mfj">Married Filing Jointly</option>
+            <option value="mfs">Married Filing Separately</option>
+            <option value="hoh">Head of Household</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="state">State</label>
+          <select id="state">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="income-w2">Employment income (W-2)</label>
+          <div class="input-with-prefix">
+            <span class="prefix">$</span>
+            <input type="text" id="income-w2" placeholder="0" inputmode="decimal">
+          </div>
+        </div>
+
+        <!-- Income Projection (inline above 1099 field) -->
+        <div class="projection-box">
+          <!-- Edit state: inputs visible -->
+          <div id="projection-edit">
+            <p class="projection-header">Don't know your annual total?</p>
+            <div class="projection-row">
+              <div class="form-group projection-field">
+                <label for="ytd-income">Earned so far</label>
+                <div class="input-with-prefix">
+                  <span class="prefix">$</span>
+                  <input type="text" id="ytd-income" placeholder="0" inputmode="decimal">
+                </div>
+              </div>
+              <div class="form-group projection-field">
+                <label for="projection-date">As of <button type="button" id="today-btn" class="today-btn">Today</button></label>
+                <input type="date" id="projection-date">
+              </div>
+            </div>
+            <button type="button" id="project-income-btn" class="btn btn-secondary">Project annual income</button>
+          </div>
+          <!-- Committed state: shows result -->
+          <div id="projection-committed" class="hidden">
+            <div class="projection-committed-row">
+              <div class="projection-committed-info">
+                <span class="projection-committed-label">Projected annual income</span>
+                <span id="projection-committed-amount" class="projection-committed-amount">$0</span>
+                <span id="projection-committed-detail" class="projection-committed-detail">from $0 as of Jan 1</span>
+              </div>
+              <button type="button" id="projection-edit-btn" class="btn btn-outline btn-sm">Edit</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="income-1099">Freelance / business / 1099 income</label>
+          <div class="input-with-prefix">
+            <span class="prefix">$</span>
+            <input type="text" id="income-1099" placeholder="0" inputmode="decimal">
+          </div>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="is-sstb" checked>
+            <span>Specified service business</span>
+            <span class="help-icon" tabindex="0" aria-label="What is a specified service business?">?</span>
+          </label>
+          <div class="help-tooltip" id="sstb-tooltip">
+            Most freelancers are in a specified service trade or business (SSTB). This includes consulting, health, law, accounting, financial services, performing arts, and any trade where the principal asset is the skill of its employees. If your income is above ~$191k (single) or ~$383k (MFJ), being an SSTB phases out your QBI deduction. Non-SSTB examples: manufacturing, retail, real estate, engineering, architecture.
+          </div>
+        </div>
+
+        <!-- Advanced Fields -->
+        <button type="button" id="toggle-advanced" class="toggle-btn">Add advanced info ▾</button>
+        <div id="advanced-fields" class="hidden subsection">
+          <div class="form-group">
+            <label for="mortgage-interest">Mortgage interest paid</label>
+            <div class="input-with-prefix">
+              <span class="prefix">$</span>
+              <input type="text" id="mortgage-interest" placeholder="0" inputmode="decimal">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ira-contributions">Traditional IRA contributions</label>
+            <div class="input-with-prefix">
+              <span class="prefix">$</span>
+              <input type="text" id="ira-contributions" placeholder="0" inputmode="decimal">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="federal-withheld">Federal taxes withheld</label>
+            <div class="input-with-prefix">
+              <span class="prefix">$</span>
+              <input type="text" id="federal-withheld" placeholder="0" inputmode="decimal">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="state-withheld">State taxes withheld</label>
+            <div class="input-with-prefix">
+              <span class="prefix">$</span>
+              <input type="text" id="state-withheld" placeholder="0" inputmode="decimal">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Estimate my quarterly payments</button>
+      </form>
+    </section>
+
+    <!-- Right Panel: Results -->
+    <section id="results-panel" class="panel results-panel hidden">
+      <div class="results-header">
+        <p class="question">Do you need to pay quarterly taxes?</p>
+        <p id="needs-quarterly" class="answer yes">Yes</p>
+      </div>
+
+      <div class="payment-cards">
+        <div class="payment-card federal">
+          <span class="payment-label">Federal Payments</span>
+          <span id="federal-payment" class="payment-amount">$0</span>
+        </div>
+        <div class="payment-card state">
+          <span id="state-payment-label" class="payment-label">State Payments</span>
+          <span id="state-payment" class="payment-amount">$0</span>
+        </div>
+      </div>
+
+      <div class="breakdown">
+        <h3>Full tax breakdown</h3>
+        <table class="breakdown-table">
+          <tbody>
+            <tr>
+              <td class="label">Total Income</td>
+              <td id="breakdown-total-income" class="value">$0</td>
+            </tr>
+            <tr>
+              <td class="label">Business deductions</td>
+              <td id="breakdown-business-deductions" class="value muted">???</td>
+            </tr>
+            <tr>
+              <td class="label">Self Employment Tax Deduction</td>
+              <td id="breakdown-se-deduction" class="value">$0</td>
+            </tr>
+            <tr class="row-highlight">
+              <td class="label">Adjusted gross income</td>
+              <td id="breakdown-agi" class="value">$0</td>
+            </tr>
+            <tr>
+              <td class="label">Standard deduction</td>
+              <td id="breakdown-standard-deduction" class="value negative">$0</td>
+            </tr>
+            <tr>
+              <td class="label">Other deductions (QBI)</td>
+              <td id="breakdown-other-deductions" class="value negative">$0</td>
+            </tr>
+            <tr class="row-highlight">
+              <td class="label">Taxable income</td>
+              <td id="breakdown-taxable-income" class="value">$0</td>
+            </tr>
+          </tbody>
+          <tbody class="section-gap">
+            <tr>
+              <td class="label">Self Employment Tax Liability</td>
+              <td id="breakdown-se-tax" class="value">$0</td>
+            </tr>
+            <tr>
+              <td class="label">Federal Taxes Liability</td>
+              <td id="breakdown-federal-tax" class="value">$0</td>
+            </tr>
+            <tr>
+              <td id="breakdown-state-tax-label" class="label">State Tax Liability</td>
+              <td id="breakdown-state-tax" class="value">$0</td>
+            </tr>
+            <tr>
+              <td class="label">Credits</td>
+              <td id="breakdown-credits" class="value">$0</td>
+            </tr>
+            <tr>
+              <td class="label">Federal taxes withheld</td>
+              <td id="breakdown-federal-withheld" class="value">$0</td>
+            </tr>
+            <tr>
+              <td class="label">State taxes withheld</td>
+              <td id="breakdown-state-withheld" class="value">$0</td>
+            </tr>
+          </tbody>
+          <tbody class="section-gap totals">
+            <tr class="row-total">
+              <td class="label">Estimated annual federal tax bill</td>
+              <td id="breakdown-annual-federal" class="value">$0</td>
+            </tr>
+            <tr class="row-total">
+              <td id="breakdown-annual-state-label" class="label">Estimated annual state tax bill</td>
+              <td id="breakdown-annual-state" class="value">$0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="state-taxes.js"></script>
+  <script src="tax-calc.js"></script>
+</body>
+</html>
